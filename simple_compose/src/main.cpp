@@ -4,13 +4,20 @@
 typedef std::function<int (int)> Op;
 
 
-
 Op compose (size_t n, Op ops[]) {
-    /// Your code goes here.
+    if (n == 0) {
+        return [] (int x) -> int { 
+            return x;
+        };
+    } else {
+        return [n, ops] (int x) -> int {
+            return ops[0](compose(n - 1, ops + 1)(x));  // recursive way
+        };
+    }
 }
 
 
-int main () {
+int main() {
     /// Simple tests:
 
     Op op1 =
