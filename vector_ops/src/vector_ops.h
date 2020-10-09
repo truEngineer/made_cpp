@@ -1,9 +1,12 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 
 namespace task {
+
+    const double kEpsilon = 1e-9;
 
     std::vector<double> operator+(const std::vector<double>& vec1, const std::vector<double>& vec2) {
         std::vector<double> vec3(vec1.size());
@@ -50,23 +53,31 @@ namespace task {
         return vec3;  // 3d cross product
     }
 
-    bool operator||(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-        for (size_t i = 1; i < vec1.size(); ++i) {
-            double delta = vec2[i] / vec1[i] - vec2[i - 1] / vec1[i - 1];
-            if (abs(delta) > 1e-9) {  // epsilon = 1e-9
+    bool zero(const std::vector<double>& vec) {
+        for (size_t i = 0; i < vec.size(); ++i) {
+            if (vec[i] >= kEpsilon) {
                 return false;
             }
         }
-        return true;  // collinearity check
+        return true;  // zero-vector check
+    }
+
+    bool operator||(const std::vector<double>& vec1, const std::vector<double>& vec2) {
+        if (!zero(vec1) and !zero(vec2)) {  // for non-zero vectors
+            for (size_t i = 1; i < vec1.size(); ++i) {
+                double delta = vec2[i] / vec1[i] - vec2[i - 1] / vec1[i - 1];
+                if (abs(delta) >= kEpsilon) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return true;
+        }  // collinearity check
     }
 
     bool operator&&(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-        for (size_t i = 0; i < vec1.size(); ++i) {
-            if ((vec1[i] > 0) != (vec2[i] > 0)) {
-                return false;
-            }
-        }
-        return vec1 || vec2;  // codirectionality check
+        return (vec1 || vec2) and (vec1 * vec2 > 0);  // codirectionality check
     }
 
     std::istream& operator>>(std::istream& istream, std::vector<double>& vec) {
