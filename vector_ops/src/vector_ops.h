@@ -53,7 +53,7 @@ namespace task {
         return vec3;  // 3d cross product
     }
 
-    bool zero(const std::vector<double>& vec) {
+    bool is_zero(const std::vector<double>& vec) {
         for (size_t i = 0; i < vec.size(); ++i) {
             if (vec[i] >= kEpsilon) {
                 return false;
@@ -63,7 +63,7 @@ namespace task {
     }
 
     bool operator||(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-        if (!zero(vec1) and !zero(vec2)) {  // for non-zero vectors
+        if (!is_zero(vec1) and !is_zero(vec2)) {  // for non-zero vectors
             for (size_t i = 1; i < vec1.size(); ++i) {
                 double delta = vec2[i] / vec1[i] - vec2[i - 1] / vec1[i - 1];
                 if (abs(delta) >= kEpsilon) {
@@ -77,7 +77,7 @@ namespace task {
     }
 
     bool operator&&(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-        return (vec1 || vec2) and (vec1 * vec2 > 0);  // codirectionality check
+        return (vec1 || vec2) and (vec1 * vec2 >= 0);  // codirectionality check
     }
 
     std::istream& operator>>(std::istream& istream, std::vector<double>& vec) {
